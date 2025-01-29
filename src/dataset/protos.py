@@ -20,38 +20,46 @@ def get_cats(num_cats):
            "FIDEJUSSIONE OMNIBUS", "ATTO DI INTEVENTO",  "APERTURA DI CREDITO CHIROGRAFARIA"]
     elif num_cats == 9:
         return ["VISURA CATASTALE", "LETTERA DI MESSA IN MORA", "DECRETO INGIUNTIVO", "VISURA IPOTECARIA", "AVVISO D'ASTA", "CTU", "PERIZIA INTERNA BANCA", "ATTO DI PRECETTO", "ATTO DI PIGNORAMENTO"]
+    elif num_cats == 10:
+        return ["VISURA CATASTALE", "LETTERA DI MESSA IN MORA", "CORRISPONDENZA", "DECRETO INGIUNTIVO", "VISURA IPOTECARIA", "AVVISO D'ASTA", "CTU", "PERIZIA INTERNA BANCA", "ATTO DI PRECETTO", "ATTO DI PIGNORAMENTO"]
     elif num_cats == 2:
         return ["CORRISPONDENZA", "LETTERA DI MESSA IN MORA"]
    
    
-def protos2(seed, uniform):
-    return protos(get_cats(2), seed, uniform, "protos2")
+def protos2(seed, truncate_big_classes=True):
+    return protos(get_cats(2), seed, truncate_big_classes, "protos2")
 
 
-def protos9(seed, uniform):
-    return protos(get_cats(9), seed, uniform, "protos9")
+def protos9(seed, truncate_big_classes=True):
+    return protos(get_cats(9), seed, truncate_big_classes, "protos9")
+
+def protos10(seed, truncate_big_classes=True):
+    return protos(get_cats(10), seed, truncate_big_classes, "protos10")
 
 
-def protos19(seed, uniform):
-    return protos(get_cats(19), seed, uniform, "protos19")
+def protos19(seed, truncate_big_classes=True):
+    return protos(get_cats(19), seed, truncate_big_classes, "protos19")
 
 
-def protos20(seed, uniform):
-    return protos(get_cats(20), seed, uniform, "protos20")
+def protos20(seed, truncate_big_classes=True):
+    return protos(get_cats(20), seed, truncate_big_classes, "protos20")
 
 
-def protos_all(seed, uniform):
-    return protos(None, seed, uniform, "protos_all")
+def protos_all(seed, truncate_big_classes=True):
+    return protos(None, seed, truncate_big_classes, "protos_all")
 
 
-def protos(cats, seed, uniform, version):
-    df, id2cat  = read(cats, uniform)
+def protos(cats, seed, truncate_big_classes, version):
+    if version == "protos_all":
+        df, id2cat  = read(seed, cats, 300, truncate_big_classes)
+    else:
+        df, id2cat  = read(seed, cats, 300, truncate_big_classes)
     x_train, y_train, id_train, x_val, y_val, id_val, x_test,  y_test, id_test = split(df, seed)
     splits_distribution(y_train, y_val, y_test, "multiclass")
     return version, id2cat, x_train, y_train, id_train, x_val, y_val, id_val, x_test, y_test, id_test
     
     
-def read(cats, uniform):
+def read(seed, cats, max_numerosity, truncate_big_classes=False):
     df = pd.read_csv("./data/protos-1.csv")
     if not cats:
         counts =  df['Micro'].value_counts()
@@ -64,20 +72,33 @@ def read(cats, uniform):
     # remove document with only whitespaces and \n 
     df = df[df["text"].str.isspace()==False]
         
-    if uniform:
-        # find class with less samples
-        classes_numerosities = list()
+    
+    #250
+    if truncate_big_classes:
+        short_df = pd.DataFrame()
         for label in df.Micro.unique().tolist():
-            classes_numerosities.append(df[df["Micro"] == label].shape[0])
-        min_numerosity = min(classes_numerosities)
+            df_label = shuffle(df[df["Micro"] == label], random_state=seed)
+            df_label = df_label.head(max_numerosity)
+            short_df = short_df.append(df_label)
+        df = shuffle(short_df, random_state=seed)
+            
+    #if uniform:
+    #    # find class with less samples
+    #    classes_numerosities = list()
+    #    for label in df.Micro.unique().tolist():
+    #        classes_numerosities.append(df[df["Micro"] == label].shape[0])
+    #    min_numerosity = min(classes_numerosities)
 
         # create uniform distributed dataset
-        uniform_df = pd.DataFrame()
-        for label in df.Micro.unique().tolist():
-            df_label = shuffle(df[df["Micro"] == label])
-            df_label = df_label.head(min_numerosity)
-            uniform_df = uniform_df.append(df_label)
-        df = shuffle(uniform_df)
+    #    uniform_df = pd.DataFrame()
+    #    for label in df.Micro.unique().tolist():
+    #        df_label = shuffle(df[df["Micro"] == label], random_state=seed)
+    #        df_label = df_label.head(min_numerosity)
+    #        uniform_df = uniform_df.append(df_label)
+    #    df = shuffle(uniform_df)
+        
+        
+        
 
     # convert original labels into numbers
     cat2id, id2cat = cat2id2cat(cats)
