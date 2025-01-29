@@ -120,6 +120,10 @@ if __name__ == "__main__":
     
     conf, model_type = build_conf(args)
     dataset_name, id2cat, x_train, y_train, id_train, x_val, y_val, id_val, x_test, y_test, id_test = conf["dataset"](conf["seed"])
+    print(len(x_train))
+    print(len(x_val))
+    print(len(x_test))
+    input()
     num_labels = len(id2cat.values())
 
     #-------------------------- BERT -----------------------------------------

@@ -6,6 +6,7 @@ from src.dataset.ecthr import ecthr_small
 from src.dataset.eurlex import eurlex_small
 from src.dataset.a_512 import a_512_small
 from src.dataset.scotus import scotus_small
+from src.dataset.protos import protos2, protos9, protos10, protos19, protos20, protos_all
 from transformers import LongformerModel
 
 from transformers import AutoTokenizer, AutoModel
@@ -24,7 +25,7 @@ def bert_tok(version, lowercase):
 def bert_emb(version, train_embedder):
     if version == "allenai/longformer-base-4096":
         LongformerModel.from_pretrained("allenai/longformer-base-4096")
-    if version == "bert-base-uncased" or version == "roberta-base" or version == "nlpaueb/legal-bert-base-uncased":
+    if version == "bert-base-uncased" or version == "roberta-base" or version == "nlpaueb/legal-bert-base-uncased" or version == "dbmdz/bert-base-italian-uncased" or version == "dbmdz/bert-base-italian-xxl-uncased" or version == "dlicari/Italian-Legal-BERT-SC":
         bert = AutoModel.from_pretrained(version, output_hidden_states = True)
     else:
         bert =  AutoModel.from_pretrained(version, output_hidden_states = True, local_files_only=True)
@@ -252,6 +253,18 @@ def objectify(conf, model_type):
         conf["dataset"] = scotus_small
     if conf["dataset"] == "newsgroups_small":
         conf["dataset"] = newsgroups_small
+    if conf["dataset"] == "protos_2":
+        conf["dataset"] = protos2
+    if conf["dataset"] == "protos_9":
+        conf["dataset"] = protos9
+    if conf["dataset"] == "protos_10":
+        conf["dataset"] = protos10
+    if conf["dataset"] == "protos_19":
+        conf["dataset"] = protos19
+    if conf["dataset"] == "protos_20":
+        conf["dataset"] = protos20
+    if conf["dataset"] == "protos_all":
+        conf["dataset"] = protos_all
         
     if conf["nn"]["criterion"] == "bce":
         conf["nn"]["criterion"] = BCEWithLogitsLoss()
