@@ -13,7 +13,6 @@ LCF-IDF enhances document representation by discovering latent concepts within t
 
 <img src="images/concept_discovery_and_translation.png" alt="Concept Discovery" width="1000">
 
-**LCF-IDF Pipeline**
 
 <img src="images/lcfidf.png" alt="LCF-IDF Model" width="350">
 
@@ -74,12 +73,6 @@ LCF-IDF enhances document representation by discovering latent concepts within t
 - `eurlex_small`
 - `a_512_small`
 - `scotus_small`
-- `datasinc_2`
-- `datasinc_9`
-- `datasinc_10`
-- `datasinc_19`
-- `datasinc_20`
-- `datasinc_all`
 
 ---
 
@@ -87,12 +80,12 @@ LCF-IDF enhances document representation by discovering latent concepts within t
 
 ### BERT-like Model
 ```sh
-venv/bin/python main.py --seed 2003 --dataset datasinc_all --bert --tokenizer dbmdz/bert-base-italian-xxl-uncased --lowercase true --embedder dbmdz/bert-base-italian-xxl-uncased --finetune true --ntokens 512 --task multiclass --criterion ce
+venv/bin/python main.py --seed 2003 --dataset newsgroups_small --bert --tokenizer dbmdz/bert-base-italian-xxl-uncased --lowercase true --embedder allenai/longformer-base-4096 --finetune true --ntokens 4096 --task multiclass --criterion ce
 ```
 
 ### TF-IDF
 ```sh
-venv/bin/python main.py --seed 12345 --dataset datasinc_2 --tfidf --lowercase true --task binary --criterion bce
+venv/bin/python main.py --seed 12345 --dataset hyperpartisan --tfidf --lowercase true --task binary --criterion bce
 ```
 
 ### LCF-IDF
@@ -102,7 +95,7 @@ venv/bin/python main.py --seed 1992 --dataset eurlex_small --ctfidf --tokenizer 
 
 ### Custom LCF-IDF
 ```sh
-venv/bin/python main.py --seed 12345 --dataset datasinc_2 --ctfidf --tokenizer dbmdz/bert-base-italian-xxl-uncased --lowercase true --embedder models/12345/protos_2/BERT_bertbaseitalianxxluncase-lcT-ftT-nt512__b8-lr3e-05-p5-bce__Vee13/embedder --ntokens 512 --task binary --criterion bce
+venv/bin/python main.py --seed 12345 --dataset hyperpartisan --ctfidf --tokenizer allenai/longformer-base-4096 --lowercase true --embedder models/12345/hyperpartisan/allenai/longformer-base-4096-lcT-ftT-nt512__b8-lr3e-05-p5-bce__Vee13/embedder --ntokens 4096 --task binary --criterion bce
 ```
 
 ---
@@ -112,17 +105,12 @@ venv/bin/python main.py --seed 12345 --dataset datasinc_2 --ctfidf --tokenizer d
 ### Performance on Open Datasets
 
 <img src="images/open_datasets.png" alt="Open Datasets Performance" width="1000">
-
 *μ (mu) denotes "small" datasets in the results.*
-
-### Performance on Proprietary Datasets
-
-<img src="images/datasinc_datasets.png" alt="Datasinc Datasets Performance" width="1000">
 
 
 ## References
 
-For a detailed explanation of ABSTAT's methodologies and applications, refer to the following papers:
+For further details, please refer to the following paper:
 
 - *Principe, R. A. A., Chiarini, N., & Viviani, M. (2024, May). An LCF-IDF Document Representation Model Applied to Long Document Classification. In Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024) (pp. 1129-1135).*
 ---
